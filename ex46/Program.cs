@@ -10,6 +10,7 @@ namespace ex46
         {
             Arena arena = new Arena();
             arena.ShowAllFighters();
+            arena.Fight();
         }
     }
 
@@ -46,6 +47,49 @@ namespace ex46
                 Console.Write($"{index}. ");
                 fighter.ShowStats();
                 index++;
+            }
+        }
+
+        public Fighter ChooseFirstFighter()
+        {
+            Console.Write("Выберете первого бойца: ");
+
+            if (int.TryParse(Console.ReadLine(), out int fighterIndex))
+            {
+                Fighter firstFighter = _fighters[fighterIndex - 1];
+                return firstFighter;
+            }
+
+            return null;
+        }
+
+        public Fighter ChooseSecondFighter()
+        {
+            Console.Write("Выберете второго бойца: ");
+
+            if (int.TryParse(Console.ReadLine(), out int fighterIndex))
+            {
+                Fighter secondFighter = _fighters[fighterIndex - 1];
+                return secondFighter;
+            }
+
+            return null;
+        }
+
+        public void Fight()
+        {
+            Fighter firstFighter = ChooseFirstFighter();
+            Fighter secondFighter = ChooseSecondFighter();
+
+            while(firstFighter.CurrentHealth > 0 && secondFighter.CurrentHealth > 0)
+            {
+                Console.Clear();
+                firstFighter.TakeDamage(secondFighter.Damage);
+                secondFighter.TakeDamage(firstFighter.Damage);
+                firstFighter.ShowCurrentHealth();
+                Console.WriteLine();
+                secondFighter.ShowCurrentHealth();
+                Console.ReadKey();
             }
         }
     }
