@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ex46
 {
@@ -10,7 +8,8 @@ namespace ex46
     {
         static void Main(string[] args)
         {
-
+            Arena arena = new Arena();
+            arena.ShowAllFighters();
         }
     }
 
@@ -35,7 +34,19 @@ namespace ex46
                 new Shaman("Шаман", _maxHealth, _maxDamage),
                 new Druid("Друид", _maxHealth, _maxDamage),
                 new Priest("Жрец", _maxHealth, _maxDamage)
-            };
+            };  
+        }
+
+        public void ShowAllFighters()
+        {
+            int index = 1;
+
+            foreach (Fighter fighter in _fighters)
+            {
+                Console.Write($"{index}. ");
+                fighter.ShowStats();
+                index++;
+            }
         }
     }
 
@@ -54,7 +65,7 @@ namespace ex46
         public int MaxHealth { get; private set; }
         public int Damage { get; set; }
 
-        public void ShowStats()
+        public virtual void ShowStats()
         {
             Console.WriteLine($"{Name}\nЗдоровье: {CurrentHealth}\nУрон: {Damage}");
         }
@@ -86,6 +97,12 @@ namespace ex46
             if (CurrentHealth > MaxHealth)
                 CurrentHealth = MaxHealth;
         }
+
+        public override void ShowStats()
+        {
+            base.ShowStats();
+            Console.WriteLine($"{Name} имеет способность высасывать жизненную энергию из врага при нанесении урона\n");
+        }
     }
 
     class Rogue : Fighter
@@ -105,6 +122,12 @@ namespace ex46
             if (chance == 0)
                 Damage = CriticalDamage;
         }
+
+        public override void ShowStats()
+        {
+            base.ShowStats();
+            Console.WriteLine($"{Name} часто опережает своего противника, получая преимущество в бою с ними в виде шанса на нанесение двойного урона при атаке\n");
+        }
     }
 
     class Warrior : Fighter
@@ -120,6 +143,12 @@ namespace ex46
         {
             damage -= Armor;
         }
+
+        public override void ShowStats()
+        {
+            base.ShowStats();
+            Console.WriteLine($"Благодаря своим тяжелым доспехам и военному мастерству, {Name} меньше получает урона от противников\n");
+        }
     }
 
     class Paladin : Fighter
@@ -133,6 +162,12 @@ namespace ex46
 
             if (chance == 0)
                 damage = 0;
+        }
+
+        public override void ShowStats()
+        {
+            base.ShowStats();
+            Console.WriteLine($"{Name} имеет шанс полностью заблокировать атаку противника благодаря божественному щиту\n");
         }
     }
 
@@ -152,6 +187,12 @@ namespace ex46
             for (int i = 0; i < HitCount; i++)
                 Damage += Damage / 10;
         }
+
+        public override void ShowStats()
+        {
+            base.ShowStats();
+            Console.WriteLine($"{Name} способен держать в страхе своих врагов, не желающих быть сожженными дотла\n");
+        }
     }
 
     class Hunter : Fighter
@@ -168,6 +209,12 @@ namespace ex46
                 IncreaseDamage(extraDamage);
             else if (health <= maxHealth / 4)
                 IncreaseDamage(extraDamage);
+        }
+
+        public override void ShowStats()
+        {
+            base.ShowStats();
+            Console.WriteLine($"У {Name}а меткий не только выстрел, но и взор, благодаря которому он может находить слабые места противников и пользоваться этим\n");
         }
 
         private void IncreaseDamage(int extraDamage)
@@ -195,6 +242,12 @@ namespace ex46
             else if (chance == 3)
                 Damage -= randomValue;
         }
+
+        public override void ShowStats()
+        {
+            base.ShowStats();
+            Console.WriteLine($"Силы стихий часто несут за собой такие же стихийные последствия для {Name}а, чем он и пользуется \n");
+        }
     }
 
     class Druid : Fighter
@@ -206,6 +259,12 @@ namespace ex46
             if (CurrentHealth <= MaxHealth / 2)
                 CurrentHealth += CurrentHealth / 6;
         }
+
+        public override void ShowStats()
+        {
+            base.ShowStats();
+            Console.WriteLine($"Связь {Name}а с лесом помогает ему оставаться невредимым даже на поле сражений\n");
+        }
     }
 
     class Priest : Fighter
@@ -216,6 +275,12 @@ namespace ex46
         {
             if (CurrentHealth <= 0)
                 CurrentHealth += MaxHealth / 5;
+        }
+
+        public override void ShowStats()
+        {
+            base.ShowStats();
+            Console.WriteLine($"Достойный {Name}, примкнувший к силам света, никогда не оставит ни себя, ни своих союзников умирать на поле боя\n");
         }
     }
 }
