@@ -18,24 +18,21 @@ namespace ex46
     class Arena
     {
         private List<Fighter> _fighters;
-        private int _maxHealth;
-        private int _maxDamage;
 
         public Arena()
         {
-            _maxHealth = 1000;
-            _maxDamage = 100;
+            Random random = new Random();
             _fighters = new List<Fighter>
             {
-                new Warlock("Чернокнижник", _maxHealth, _maxDamage, _maxDamage/5),
-                new Rogue("Разбойник", _maxHealth, _maxDamage),
-                new Warrior("Воин", _maxHealth, _maxDamage, _maxDamage/2),
-                new Paladin("Паладин", _maxHealth, _maxDamage),
-                new Mage("Маг", _maxHealth, _maxDamage),
-                new Hunter("Охотник", _maxHealth, _maxDamage),
-                new Shaman("Шаман", _maxHealth, _maxDamage),
-                new Druid("Друид", _maxHealth, _maxDamage),
-                new Priest("Жрец", _maxHealth, _maxDamage)
+                new Warlock("Чернокнижник", 1000, 100, random.Next(10, 30)),
+                new Rogue("Разбойник", 1000, 100),
+                new Warrior("Воин", 1000, 100, random.Next(0, 100)),
+                new Paladin("Паладин", 1000, 100),
+                new Mage("Маг", 1000, 100),
+                new Hunter("Охотник", 1000, 100),
+                new Shaman("Шаман", 1000, 100),
+                new Druid("Друид", 1000, 100),
+                new Priest("Жрец", 1000, 100)
             };
         }
 
@@ -70,17 +67,17 @@ namespace ex46
                     Console.Clear();
 
                     firstFighter.TakeDamage(secondFighter.Damage);
-                    firstFighter.UseAbility(secondFighter.Damage, secondFighter.MaxHealth, secondFighter.CurrentHealth);
+                    firstFighter.UseAbility();
 
                     secondFighter.TakeDamage(firstFighter.Damage);
-                    secondFighter.UseAbility(firstFighter.Damage, firstFighter.MaxHealth, secondFighter.CurrentHealth);
+                    secondFighter.UseAbility();
 
                     firstFighter.ShowCurrentHealth();
-                    firstFighter.ShowChangingsInHealth(secondFighter.Damage);
+                    firstFighter.ShowRecievedDamage(secondFighter.Damage);
                     Console.WriteLine();
 
                     secondFighter.ShowCurrentHealth();
-                    secondFighter.ShowChangingsInHealth(firstFighter.Damage);
+                    secondFighter.ShowRecievedDamage(firstFighter.Damage);
                     Console.WriteLine();
 
                     if (firstFighter.CurrentHealth <= 0 && secondFighter.CurrentHealth <= 0)
@@ -97,6 +94,7 @@ namespace ex46
             {
                 Console.WriteLine("Двух одиннаковых бойцов выбрать нельзя");
             }
+
 
             Console.ReadKey();
             Console.Clear();
@@ -131,10 +129,6 @@ namespace ex46
 
     class Fighter
     {
-        public string Name;
-        public int CurrentHealth;
-        public int MaxHealth;
-        public int Damage;
 
         public Fighter(string name, int health, int damage)
         {
@@ -143,6 +137,11 @@ namespace ex46
             CurrentHealth = health;
             Damage = damage;
         }
+
+        public string Name { get; protected set; }
+        public int CurrentHealth { get; protected set; }
+        public int MaxHealth { get; protected set; }
+        public int Damage { get; protected set; }
 
         public virtual void ShowStats()
         {
@@ -154,12 +153,12 @@ namespace ex46
             Console.WriteLine($"{Name}\nЗдоровье: {CurrentHealth}");
         }
 
-        public void ShowChangingsInHealth(int damage)
+        public void ShowRecievedDamage(int damage)
         {
             Console.WriteLine($"Нанесенный урон - {damage}");
         }
 
-        public virtual void UseAbility(int damage, int maxHealth, int currentHealth) { }
+        public virtual void UseAbility() { }
 
         public void TakeDamage(int damage)
         {
@@ -178,10 +177,7 @@ namespace ex46
 
         public void StealLife()
         {
-            CurrentHealth += Lifesteal;
 
-            if (CurrentHealth > MaxHealth)
-                CurrentHealth = MaxHealth;
         }
 
         public override void ShowStats()
@@ -190,7 +186,7 @@ namespace ex46
             Console.WriteLine($"{Name} имеет способность высасывать жизненную энергию из врага при нанесении урона\n");
         }
 
-        public override void UseAbility(int damage, int maxHealth, int currentHealth)
+        public override void UseAbility()
         {
             StealLife();
         }
@@ -211,10 +207,10 @@ namespace ex46
             Damage = initialDamage;
             Random random = new Random();
             int chance = random.Next(5); //20%
-            int critDamage = Damage * 2;
+            int critDamage = Damage * 3;
 
             if (chance == 0)
-                Damage = critDamage;               
+                Damage = critDamage;
         }
 
         public override void ShowStats()
@@ -223,7 +219,7 @@ namespace ex46
             Console.WriteLine($"{Name} часто опережает своего противника, получая преимущество в бою с ними в виде шанса на нанесение двойного урона при атаке\n");
         }
 
-        public override void UseAbility(int damage, int maxHealth, int currentHealth)
+        public override void UseAbility()
         {
             DealCriticalDamage();
         }
@@ -238,9 +234,9 @@ namespace ex46
 
         public int Armor { get; private set; }
 
-        public void BlockDamage(int damage)
+        public void BlockDamage()
         {
-            damage -= Armor;
+            
         }
 
         public override void ShowStats()
@@ -249,9 +245,9 @@ namespace ex46
             Console.WriteLine($"Благодаря своим тяжелым доспехам и военному мастерству, {Name} меньше получает урона от противников\n");
         }
 
-        public override void UseAbility(int damage, int maxHealth, int currentHealth)
+        public override void UseAbility()
         {
-            BlockDamage(damage);
+            BlockDamage();
         }
     }
 
@@ -259,13 +255,16 @@ namespace ex46
     {
         public Paladin(string name, int health, int damage) : base(name, health, damage) { }
 
-        public void EvadeDamage(int damage)
+        public void EvadeDamage()
         {
             Random random = new Random();
             int chance = random.Next(20); //5%
 
             if (chance == 0)
-                damage = 0;
+            {
+
+            }
+                
         }
 
         public override void ShowStats()
@@ -274,9 +273,9 @@ namespace ex46
             Console.WriteLine($"{Name} имеет шанс полностью заблокировать атаку противника благодаря божественному щиту\n");
         }
 
-        public override void UseAbility(int damage, int maxHealth, int currentHealth)
+        public override void UseAbility()
         {
-            EvadeDamage(damage);
+            EvadeDamage();
         }
     }
 
@@ -303,7 +302,7 @@ namespace ex46
             Console.WriteLine($"{Name} способен держать в страхе своих врагов, не желающих быть сожженными дотла\n");
         }
 
-        public override void UseAbility(int damage, int maxHealth, int currentHealth)
+        public override void UseAbility()
         {
             BurnEnemy();
         }
@@ -313,16 +312,9 @@ namespace ex46
     {
         public Hunter(string name, int health, int damage) : base(name, health, damage) { }
 
-        public void HitToWounds(int currentHealth, int maxHealth)
+        public void HitToWounds()
         {
-            int extraDamage = currentHealth / 8;
 
-            if (currentHealth <= maxHealth / 2)
-                IncreaseDamage(extraDamage);
-            else if (currentHealth <= maxHealth / 3)
-                IncreaseDamage(extraDamage);
-            else if (currentHealth <= maxHealth / 4)
-                IncreaseDamage(extraDamage);
         }
 
         public override void ShowStats()
@@ -331,14 +323,9 @@ namespace ex46
             Console.WriteLine($"У {Name}а меткий не только выстрел, но и взор, благодаря которому он может находить слабые места противников и пользоваться этим\n");
         }
 
-        private void IncreaseDamage(int extraDamage)
+        public override void UseAbility()
         {
-            Damage += extraDamage;
-        }
-
-        public override void UseAbility(int damage, int maxHealth, int currentHealth)
-        {
-            HitToWounds(currentHealth, maxHealth);
+            HitToWounds();
         }
     }
 
@@ -352,14 +339,14 @@ namespace ex46
             int chance = random.Next(4); //25%
             int randomValue = random.Next(MaxHealth / 20, MaxHealth / 10);
 
-            if (chance == 0)
-                CurrentHealth += randomValue;
-            else if (chance == 1)
-                Damage += randomValue;
-            else if (chance == 2)
-                CurrentHealth -= randomValue;
-            else if (chance == 3)
-                Damage -= randomValue;
+            if (chance == 0) { }
+                
+            else if (chance == 1) { }
+               
+            else if (chance == 2) { }
+                
+            else if (chance == 3) { }
+                
         }
 
         public override void ShowStats()
@@ -368,7 +355,7 @@ namespace ex46
             Console.WriteLine($"Силы стихий часто несут за собой такие же стихийные последствия для {Name}а, чем он и пользуется \n");
         }
 
-        public override void UseAbility(int damage, int maxHealth, int currentHealth)
+        public override void UseAbility()
         {
             GetSpontaneousEffect();
         }
@@ -380,8 +367,7 @@ namespace ex46
 
         public void HealYourself()
         {
-            if (CurrentHealth <= MaxHealth / 2)
-                CurrentHealth += CurrentHealth / 6;
+            
         }
 
         public override void ShowStats()
@@ -390,7 +376,7 @@ namespace ex46
             Console.WriteLine($"Связь {Name}а с лесом помогает ему оставаться невредимым даже на поле сражений\n");
         }
 
-        public override void UseAbility(int damage, int maxHealth, int currentHealth)
+        public override void UseAbility()
         {
             HealYourself();
         }
@@ -402,17 +388,16 @@ namespace ex46
 
         public void RiseAgain()
         {
-            if (CurrentHealth <= 0)
-                CurrentHealth += MaxHealth / 5;
+           
         }
 
         public override void ShowStats()
         {
             base.ShowStats();
-            Console.WriteLine($"Достойный {Name}, примкнувший к силам света, никогда не оставит ни себя, ни своих союзников умирать на поле боя\n");
+            Console.WriteLine($"Благородный {Name}, примкнувший к силам света, никогда не оставит ни себя, ни своих союзников умирать на поле боя\n");
         }
 
-        public override void UseAbility(int damage, int maxHealth, int currentHealth)
+        public override void UseAbility()
         {
             RiseAgain();
         }
