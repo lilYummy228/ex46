@@ -24,7 +24,7 @@ namespace ex46
             Random random = new Random();
             _fighters = new List<Fighter>
             {
-                new Warlock("Чернокнижник", 1000, 100, random.Next(10, 30)),
+                new Warlock("Чернокнижник", 1000, 100),
                 new Rogue("Разбойник", 1000, 100),
                 new Warrior("Воин", 1000, 100, random.Next(0, 100)),
                 new Paladin("Паладин", 1000, 100),
@@ -66,17 +66,15 @@ namespace ex46
                 {
                     Console.Clear();
 
-                    firstFighter.TakeDamage(secondFighter.Damage);
-                    firstFighter.UseAbility();
-
-                    secondFighter.TakeDamage(firstFighter.Damage);
-                    secondFighter.UseAbility();
-
                     firstFighter.ShowCurrentHealth();
+                    firstFighter.UseAbility();
+                    firstFighter.TakeDamage(secondFighter.Damage);
                     firstFighter.ShowRecievedDamage(secondFighter.Damage);
-                    Console.WriteLine();
 
+                    Console.WriteLine("\n\n");
                     secondFighter.ShowCurrentHealth();
+                    secondFighter.UseAbility();
+                    secondFighter.TakeDamage(firstFighter.Damage);
                     secondFighter.ShowRecievedDamage(firstFighter.Damage);
                     Console.WriteLine();
 
@@ -129,7 +127,6 @@ namespace ex46
 
     class Fighter
     {
-
         public Fighter(string name, int health, int damage)
         {
             Name = name;
@@ -155,7 +152,7 @@ namespace ex46
 
         public void ShowRecievedDamage(int damage)
         {
-            Console.WriteLine($"Нанесенный урон - {damage}");
+            Console.WriteLine($"Полученный урон - {damage}");
         }
 
         public virtual void UseAbility() { }
@@ -168,16 +165,16 @@ namespace ex46
 
     class Warlock : Fighter
     {
-        public Warlock(string name, int health, int damage, int lifesteal) : base(name, health, damage)
-        {
-            Lifesteal = lifesteal;
-        }
+        private Random _random = new Random();
+        private int _lifesteal;
 
-        public int Lifesteal { get; private set; }
+        public Warlock(string name, int health, int damage) : base(name, health, damage) { }
 
         public void StealLife()
         {
-
+            _lifesteal = _random.Next(10, 30);
+            CurrentHealth += _lifesteal;
+            Console.WriteLine($"Здоровья получено: {_lifesteal}");
         }
 
         public override void ShowStats()
@@ -236,7 +233,7 @@ namespace ex46
 
         public void BlockDamage()
         {
-            
+
         }
 
         public override void ShowStats()
@@ -264,7 +261,7 @@ namespace ex46
             {
 
             }
-                
+
         }
 
         public override void ShowStats()
@@ -340,13 +337,13 @@ namespace ex46
             int randomValue = random.Next(MaxHealth / 20, MaxHealth / 10);
 
             if (chance == 0) { }
-                
+
             else if (chance == 1) { }
-               
+
             else if (chance == 2) { }
-                
+
             else if (chance == 3) { }
-                
+
         }
 
         public override void ShowStats()
@@ -367,7 +364,7 @@ namespace ex46
 
         public void HealYourself()
         {
-            
+
         }
 
         public override void ShowStats()
@@ -388,7 +385,7 @@ namespace ex46
 
         public void RiseAgain()
         {
-           
+
         }
 
         public override void ShowStats()
